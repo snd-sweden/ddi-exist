@@ -160,13 +160,13 @@ declare function ddi-exist:searchQuestion($search as xs:string, $lang as xs:stri
     let $result :=
         if($search = '')
         then
-            $collection//d:QuestionScheme/d:QuestionItem | $collection//d:QuestionScheme/d:QuestionGrid
+            $collection//d:QuestionItem | $collection//d:QuestionGrid
         else
             if($lang = '')
             	then
-            		$collection//d:QuestionScheme/(d:QuestionItem | d:QuestionGrid)[d:QuestionText/d:LiteralText[ft:query(d:Text, $search)]]
+            		$collection//(d:QuestionItem | d:QuestionGrid)[ft:query(.//., $search)]
             	else
-                	$collection//d:QuestionScheme/(d:QuestionItem | d:QuestionGrid)[d:QuestionText/d:LiteralText[ft:query(d:Text[@xml:lang = $lang], $search)]]
+                	$collection//(d:QuestionItem | d:QuestionGrid)[.//d:Text[@xml:lang = $lang][ft:query(., $search)]]
     return
         $result
 };

@@ -125,29 +125,36 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
         {
         if($top)
             then
+                let $study := $question/ancestor::s:StudyUnit
+                return
                 <study>
                         <uri>{fn:base-uri($question/ancestor::ddi:DDIInstance)}</uri>
                         <id>{xs:string(
-                            if($question/ancestor::s:StudyUnit/r:UserID[@typeOfUserID='study_id'])
+                            if($study/r:UserID[@typeOfUserID='study_id'])
                                 then
-                                    $question/ancestor::s:StudyUnit/r:UserID[@typeOfUserID='study_id']
+                                    $study/r:UserID[@typeOfUserID='study_id']
                                 else
-                                    $question/ancestor::s:StudyUnit/@id
+                                    $study/@id
                             )}   
                         </id>
-                        <CallNumber>{xs:string($question/ancestor::s:StudyUnit//a:CallNumber[0])}</CallNumber>
+                        <CallNumber>{$study//a:CallNumber/text()}</CallNumber>
                         <title>
-                            {for $t in $question/ancestor::s:StudyUnit/r:Citation/r:Title/r:String
+                            {for $t in $study/r:Citation/r:Title/r:String
                                 return
                                     element {$t/@xml:lang} {fn:string($t)}
                             }
                         </title>
                         <alsoIn>
                             {
-                            let $studies := collection('/db/ddi/data/ddi3_2')//s:StudyUnit[.//d:Text = $question//d:Text[@xml:lang="sv"]/text()]
+                            let $question_id := $question/r:UserID[@typeOfUserID='question_id']/text()
+                            let $question_text := $question//d:Text[@xml:lang="sv"]/text()
+                            let $studies := collection('/db/ddi/data/ddi3_2/')//s:StudyUnit[.//d:Text = $question_text]
                             for $s in $studies
                                 order by $s/r:Citation/r:Title/r:String[@xml:lang="sv"]
                                     return
+                                    if($study//a:CallNumber/text() eq $s//a:CallNumber/text()) then
+                                        ()
+                                    else
                                         <study>
                                             <callNumber>{$s//a:CallNumber/text()}</callNumber>
                                             <title>
