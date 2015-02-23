@@ -152,10 +152,17 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
                             for $s in $studies
                                 order by $s/r:Citation/r:Title/r:String[@xml:lang="sv"]
                                     return
+                                        
                                     if($study//a:CallNumber/text() eq $s//a:CallNumber/text()) then
                                         ()
                                     else
+                                        let $qi := $s//d:QuestionItem[.//d:Text = $question_text]
+                                        let $qs := $qi/ancestor::d:QuestionScheme
+                                        let $fi := $s/r:OtherMaterial[.//r:ID = replace($qs/r:ID, 'qs_', '')]//r:ExternalURLReference/text()
+                                        return
                                         <study>
+                                            <name>{xs:string($qi/d:QuestionItemName/r:String | $qi/d:QuestionGridName/r:String)}</name>
+                                            
                                             <callNumber>{$s//a:CallNumber/text()}</callNumber>
                                             <title>
                                                     {for $t in $s/r:Citation/r:Title/r:String
@@ -163,6 +170,16 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
                                                             element {ddi-exist-utils:getLang($t)} {fn:string($t)}
                                                     }
                                             </title>
+                                            <questionscheme>
+                                                <name>
+                                                    {
+                                                        for $qss in $qs/d:QuestionSchemeName/r:String
+                                                            return 
+                                                                element {$qss/@xml:lang} {fn:string($qss)}
+                                                    }
+                                                </name>
+                                                <file>{$fi}</file>
+                                            </questionscheme>
                                         </study>
                             }
                             </alsoIn>
