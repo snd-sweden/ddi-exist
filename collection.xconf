@@ -1,28 +1,5 @@
 <collection xmlns="http://exist-db.org/collection-config/1.0">
-    <index
-    xmlns:xml="http://www.w3.org/XML/1998/namespace"
-    xmlns:a="ddi:archive:3_2" 
-    xmlns:pr="ddi:ddiprofile:3_2" 
-    xmlns:c="ddi:conceptualcomponent:3_2" 
-    xmlns:d="ddi:datacollection:3_2" 
-    xmlns:m1="ddi:physicaldataproduct_ncube_normal:3_2" 
-    xmlns:m2="ddi:physicaldataproduct_ncube_tabular:3_2" 
-    xmlns:m3="ddi:physicaldataproduct_ncube_inline:3_2" 
-    xmlns:g="ddi:group:3_2" 
-    xmlns:m4="ddi:physicaldataproduct_proprietary:3_2" 
-    xmlns:ddi="ddi:instance:3_2" 
-    xmlns:dc_terms="http://purl.org/dc/terms/" 
-    xmlns:cm="ddi:comparative:3_2" 
-    xmlns:l="ddi:logicalproduct:3_2" 
-    xmlns:ds="ddi:dataset:3_2" 
-    xmlns:p="ddi:physicaldataproduct:3_2" 
-    xmlns:dc2="http://purl.org/dc/elements/1.1/" 
-    xmlns:r="ddi:reusable:3_2" 
-    xmlns:s="ddi:studyunit:3_2" 
-    xmlns:pi="ddi:physicalinstance:3_2" 
-    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-    xmlns:atom="http://www.w3.org/2005/Atom" 
-    xmlns:dc="ddi:dcelements:3_2">
+    <index xmlns:a="ddi:archive:3_2" xmlns:pr="ddi:ddiprofile:3_2" xmlns:c="ddi:conceptualcomponent:3_2" xmlns:d="ddi:datacollection:3_2" xmlns:m1="ddi:physicaldataproduct_ncube_normal:3_2" xmlns:m2="ddi:physicaldataproduct_ncube_tabular:3_2" xmlns:m3="ddi:physicaldataproduct_ncube_inline:3_2" xmlns:g="ddi:group:3_2" xmlns:m4="ddi:physicaldataproduct_proprietary:3_2" xmlns:ddi="ddi:instance:3_2" xmlns:dc_terms="http://purl.org/dc/terms/" xmlns:cm="ddi:comparative:3_2" xmlns:l="ddi:logicalproduct:3_2" xmlns:ds="ddi:dataset:3_2" xmlns:p="ddi:physicaldataproduct:3_2" xmlns:dc2="http://purl.org/dc/elements/1.1/" xmlns:r="ddi:reusable:3_2" xmlns:s="ddi:studyunit:3_2" xmlns:pi="ddi:physicalinstance:3_2" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="ddi:dcelements:3_2">
         <!-- Disable the standard full text index -->
         <fulltext default="none" attributes="false"/>
         
@@ -34,14 +11,12 @@
             <text qname="r:Creator" analyzer="st" boost="19683.0"/>
             <text qname="a:FirstGiven" analyzer="st" boost="19683.0"/>
             <text qname="a:LastFamily" analyzer="st" boost="19683.0"/>
-            <text qname="a:OrganizationName" analyzer="st" boost="19683.0"/>
-
+            <text qname="a:OrganizationName/r:String" analyzer="st" boost="19683.0"/>
             <text qname="r:Title" analyzer="st" boost="6561.0"/>
             <text match="s:Abstract" analyzer="st" boost="2187.0"/>
             <text match="s:Purpose" analyzer="st" boost="729.0"/>
             <text qname="r:KindOfData" analyzer="st" boost="243.0"/>
             <text match="r:Label" analyzer="st" boost="81.0"/>
-            
             <text qname="r:Description" analyzer="st" boost="81.0"/>
             <text match="r:UniverseReference" analyzer="st" boost="27.0"/>
             <text match="c:Universe" analyzer="st" boost="27.0"/>
@@ -61,7 +36,7 @@
             <create qname="r:UserID">
                 <field name="typeOfUserID" match="@typeOfUserID" type="xs:string"/>
                 <field name="UserID" match="r:UserID" type="xs:string"/>
-            </create>        
+            </create>
             <create qname="r:SimpleDate" type="xs:dateTime"/>
             <create qname="r:UserID" type="xs:string"/>
             <create qname="d:Text" type="xs:string"/>

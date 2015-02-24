@@ -148,31 +148,24 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
                             {
                             let $question_id := $question/r:UserID[@typeOfUserID='question_id']/text()
                             let $question_text := $question//d:Text[@xml:lang="sv"]/text()
-                            let $studies := collection('/db/ddi/data/ddi3_2/')//s:StudyUnit[.//d:Text = $question_text]
+                            let $studies := collection('/db/ddi/data/ddi3_2/')//s:StudyUnit[.//d:Text = $question_text][.//a:CallNumber/text() != $study//a:CallNumber/text()]
                             for $s in $studies
                                 order by $s/r:Citation/r:Title/r:String[@xml:lang="sv"]
-                                    return
-                                        
-                                    if($study//a:CallNumber/text() eq $s//a:CallNumber/text()) then
-                                        ()
-                                    else
+                                    return 
                                         let $qi := $s//d:QuestionItem[.//d:Text = $question_text]
                                         let $qs := $qi/ancestor::d:QuestionScheme
-                                        let $fi := $s/r:OtherMaterial[.//r:ID = replace($qs/r:ID, 'qs_', '')]//r:ExternalURLReference/text()
+                                        let $fi := $s/r:OtherMaterial[.//r:ID = replace($qs/r:ID[0], 'qs_', '')]//r:ExternalURLReference/text()
                                         return
                                         <study>
-                                            <name>{xs:string($qi/d:QuestionItemName/r:String | $qi/d:QuestionGridName/r:String)}</name>
-                                            
+                                            <name>{xs:string($qi/d:QuestionItemName/r:String[0] | $qi/d:QuestionGridName/r:String[0])}</name>
                                             <callNumber>{$s//a:CallNumber/text()}</callNumber>
-                                            <title>
-                                                    {for $t in $s/r:Citation/r:Title/r:String
+                                            <title>{for $t in $s/r:Citation/r:Title/r:String
                                                         return
                                                             element {ddi-exist-utils:getLang($t)} {fn:string($t)}
                                                     }
                                             </title>
-                                            <questionscheme>
-                                                <name>
-                                                    {
+                                            <questionscheme json:array="true">
+                                                <name>{
                                                         for $qss in $qs/d:QuestionSchemeName/r:String
                                                             return 
                                                                 element {$qss/@xml:lang} {fn:string($qss)}
@@ -241,11 +234,7 @@ declare function ddi-exist-utils:renderStudy($study as node()) as node()*{
                 return
                     $study//.[./r:ID = $a]
             }                    
-        </creator>   
-
-
-        <questions>{count($study//(d:QuestionText | d:QuestionGrid)/..)}</questions>
-        <variables>{count($study//l:Variable)}</variables>
+        </creator>
     </StudyUnit>   
 
 };
@@ -309,19 +298,22 @@ declare function ddi-exist-utils:renderVariable($variable as node()) as node(){
 
 
 declare function ddi-exist-utils:renderResponseDomain($item as node()) as node(){
+    let $codeList := $item/ancestor::s:StudyUnit//l:CodeScheme[r:ID = xs:string($item//r:CodeListReference/r:ID)]
+    let $categoryScheme := $item/ancestor::s:StudyUnit//.[r:ID = $codeList/r:CategorySchemeReference/r:ID]
+    return
     <responsedomain>
         <codescheme>{$item/l:Representation/l:CodeRepresentation/r:CodeSchemeReference/r:ID}</codescheme>
         <codes>
             {
-                for $code in $item/ancestor::s:StudyUnit//l:CodeScheme[@id = xs:string($item//r:CodeSchemeReference/r:ID)]/l:Code
+                for $category in $categoryScheme/l:Category
                     return 
                         <code>
-                            <value>{xs:string($code/l:Value)}</value>
+                            <value>{xs:string($category/r:Version)}</value>
                             <label>
-                            {
-                                for $category in $item/ancestor::s:StudyUnit//l:Category[@id = xs:string($code/l:CategoryReference/r:ID)]/r:Label/r:Content
-                                    return element {ddi-exist-utils:getLang($category)} {xs:string($category)}
-                            }
+                                {for $t in $category/l:CategoryName/r:String
+                                    return
+                                        element {$t/@xml:lang} {fn:string($t)}
+                                }
                             </label>
                         </code>
             }
