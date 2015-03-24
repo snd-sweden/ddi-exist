@@ -36,14 +36,19 @@ declare function ddi-exist:searchStudy($search as xs:string, $lang as xs:string,
             then
                 for $element in $collection//ddi:DDIInstance/s:StudyUnit[
                             ft:query(.//r:Title, $search)  | 
+                            ft:query(.//a:CallNumber, $search)  |
                             ft:query(.//r:Subject, $search) |
                             ft:query(.//r:Keyword, $search) |
+                            ft:query(.//s:Content, $search) |
                             ft:query(.//a:FirstGiven, $search) |
                             ft:query(.//a:LastFamily, $search) |
-                            ft:query(r:Abstract/r:Content, $search) |
-                            fn:contains(.//a:OrganizationName/r:String, $search) |
-                            fn:contains(.//r:UserID, $search)
-                        ]
+                            ft:query(.//r:Abstract, $search) |
+                            ft:query(.//r:Purpose, $search) |
+                            ft:query(.//a:OrganizationName/r:String, $search) |
+                            ft:query(.//r:UserID, $search) |
+                            ft:query(.//r:KindOfData, $search)
+                            
+                    ]
                     order by ft:score($element) descending
                     return $element
           else
@@ -167,9 +172,15 @@ declare function ddi-exist:searchQuestion($search as xs:string, $lang as xs:stri
         else
             if($lang = '')
             	then
-                    for $q in $collection//d:QuestionItem[ft:query(.//d:Text, $search)] | $collection//d:QuestionGrid[ft:query(.//d:Text, $search)]
-                        let $score := ft:score($q)
-                        order by $score descending                    
+                    for $q in $collection//d:QuestionItem[ft:query(.//d:Text, $search)] |
+                              $collection//d:QuestionItem[contains(.//d:Text, $search)] | 
+                              $collection//d:QuestionGrid[ft:query(.//d:Text, $search)] |
+                              $collection//d:QuestionGrid[contains(.//d:Text, $search)]
+                        
+                        (: let $score := ft:score($q) :)
+                        group by $text := $q//d:Text[0]
+                        (: order by $score descending :)
+                        
                         return $q
             	else
                 	$collection//(d:QuestionItem | d:QuestionGrid)[.//d:Text[@xml:lang = $lang][ft:query(., $search)]]
