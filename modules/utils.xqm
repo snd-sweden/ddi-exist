@@ -1,5 +1,5 @@
 xquery version "1.0";
-module namespace ddi-exist-utils="http://code.google.com/p/ddi-exist/";
+module namespace ddi-exist-utils="https://github.com/snd-sweden/ddi-exist";
 declare namespace json="http://www.json.org";
 
 (:ddi namespaces:)
@@ -15,7 +15,7 @@ declare namespace ddi="ddi:instance:3_2";
 declare namespace l="ddi:logicalproduct:3_2";
 
 
-import module namespace ddi-exist       ='http://code.google.com/p/ddi-exist/search' at '/db/apps/ddi-exist/modules/search.xqm';
+import module namespace ddi-exist = 'https://github.com/snd-sweden/ddi-exist/search' at '/db/apps/ddi-exist/modules/search.xqm';
 
 (:validate a document against its schema:)
 declare function ddi-exist-utils:validate($document as xs:string, $version as xs:string) as node()*
@@ -108,7 +108,7 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
         <questiontext>
         {
             for $q in $question/d:QuestionText/d:LiteralText/d:Text 
-                return element {ddi-exist-utils:getLang($q)} {fn:string($q)}        
+                return element {ddi-exist-utils:getLang($q)} {fn:string($q)}  
         }
         </questiontext>
         {
@@ -150,7 +150,7 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
                             let $question_text := $question//d:Text[@xml:lang="sv"]/text()
                             let $studies := collection('/db/ddi/data/ddi3_2/')//s:StudyUnit[.//d:Text = $question_text][.//a:CallNumber/text() != $study//a:CallNumber/text()]
                             for $s in $studies
-                                order by $s/r:Citation/r:Title/r:String[@xml:lang="sv"]
+                                order by $s/r:Citation/r:Title/r:String[@xml:lang="sv"] descending 
                                     return 
                                         let $qi := $s//d:QuestionItem[.//d:Text = $question_text]
                                         let $qs := $qi/ancestor::d:QuestionScheme

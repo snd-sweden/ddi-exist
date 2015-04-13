@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--This is the main config for the apps for DDI -->
 <config>
-    <base>/db/ddi/data/ddi3_2/internal</base>
+    <!--<base>/db/ddi/data/ddi3_2/internal</base>-->
+    <base>/db/ddi/data/ddi3_2/</base>
     <base-url>http://xml.snd.gu.se/</base-url>
     <default-lang>sv</default-lang>
     <default-records>10</default-records>

@@ -1,5 +1,5 @@
 xquery version "1.0";
-module namespace ddi-exist="http://code.google.com/p/ddi-exist/search";
+module namespace ddi-exist="https://github.com/snd-sweden/ddi-exist/search";
 
 (:ddi namespaces:)
 declare namespace g = "ddi:group:3_2";
@@ -37,6 +37,7 @@ declare function ddi-exist:searchStudy($search as xs:string, $lang as xs:string,
                 for $element in $collection//ddi:DDIInstance/s:StudyUnit[
                             ft:query(.//r:Title, $search)  | 
                             ft:query(.//a:CallNumber, $search)  |
+                            contains(.//a:CallNumber, $search)  |
                             ft:query(.//r:Subject, $search) |
                             ft:query(.//r:Keyword, $search) |
                             ft:query(.//s:Content, $search) |
@@ -56,6 +57,55 @@ declare function ddi-exist:searchStudy($search as xs:string, $lang as xs:string,
                     order by ft:score($element) descending
                     return $element
 
+};
+
+
+(:~
+ : Makes a free-text search in questions elements and returns the matches
+ :
+ : @version 1.0
+ : @param   $search the string that needs to be matched
+ : @param   $lang  filter the search for one language, if empty all languages
+ : @param   $collection the collection to search in
+ : @return  all top level questions containing the match
+ :)
+declare function ddi-exist:searchQuestion($search as xs:string, $lang as xs:string, $collection as node()*) as node()*
+{
+    let $result :=
+        if($search = '')
+        then
+            $collection//d:QuestionItem | $collection//d:QuestionGrid
+        else
+            if($lang = '')
+            	then
+                    for $q in $collection//d:QuestionItem[ft:query(.//d:Text, $search)] |
+                              $collection//d:QuestionItem[contains(.//d:Text, $search)] | 
+                              $collection//d:QuestionGrid[ft:query(.//d:Text, $search)] |
+                              $collection//d:QuestionGrid[contains(.//d:Text, $search)]
+                        
+                        (: let $score := ft:score($q) :)
+                        group by $text := $q//d:Text[0]
+                        (: order by $score descending :)
+                        
+                        return $q
+            	else
+                	$collection//(d:QuestionItem | d:QuestionGrid)[.//d:Text[@xml:lang = $lang][ft:query(., $search)]]
+    return
+        $result
+};
+
+
+declare function ddi-exist:searchVariable($search as xs:string, $lang as xs:string, $collection as node()*) as node()*
+{
+    if($search = '')
+    then
+        $collection//l:Variable
+    else
+        if(empty($lang))
+            then
+        		$collection//l:Variable[ft:query(.//., $search)]
+        	else
+        		$collection//l:Variable[ft:query(.//., $search)]
 };
 
 (:~
@@ -99,8 +149,6 @@ declare function ddi-exist:searchStudyByGeoId($id as xs:string, $type as xs:stri
             order by ft:score($element) descending
             return $element
 };
-
-
 
 declare function ddi-exist:term-callback($term as xs:string, $data as xs:int+) as element() {
     <term freq="{$data[1]}" docs="{$data[2]}" n="{$data[3]}">{$term}</term> 
@@ -153,56 +201,6 @@ declare function ddi-exist:apply-facet-filter($collection as node()*) as node()*
 };
 
 
-
-(:~
- : Makes a free-text search in questions elements and returns the matches
- :
- : @version 1.0
- : @param   $search the string that needs to be matched
- : @param   $lang  filter the search for one language, if empty all languages
- : @param   $collection the collection to search in
- : @return  all top level questions containing the match
- :)
-declare function ddi-exist:searchQuestion($search as xs:string, $lang as xs:string, $collection as node()*) as node()*
-{
-    let $result :=
-        if($search = '')
-        then
-            $collection//d:QuestionItem | $collection//d:QuestionGrid
-        else
-            if($lang = '')
-            	then
-                    for $q in $collection//d:QuestionItem[ft:query(.//d:Text, $search)] |
-                              $collection//d:QuestionItem[contains(.//d:Text, $search)] | 
-                              $collection//d:QuestionGrid[ft:query(.//d:Text, $search)] |
-                              $collection//d:QuestionGrid[contains(.//d:Text, $search)]
-                        
-                        (: let $score := ft:score($q) :)
-                        group by $text := $q//d:Text[0]
-                        (: order by $score descending :)
-                        
-                        return $q
-            	else
-                	$collection//(d:QuestionItem | d:QuestionGrid)[.//d:Text[@xml:lang = $lang][ft:query(., $search)]]
-    return
-        $result
-};
-
-(: find variables :)
-declare function ddi-exist:searchVariable($search as xs:string, $lang as xs:string, $collection as node()*) as node()*
-{
-    if($search = '')
-    then
-        $collection//l:Variable
-    else
-        if(empty($lang))
-            then
-        		$collection//l:Variable[ft:query(.//., $search)]
-        	else
-        		$collection//l:Variable[ft:query(.//., $search)]
-};
-
-(: find concept :)
 declare function ddi-exist:searchConcept($search as xs:string, $lang as xs:string, $collection as node()*) as node()*
 {
     if(empty($search))
