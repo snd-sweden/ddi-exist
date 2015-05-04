@@ -192,27 +192,9 @@ declare function ddi-exist:facets($search as xs:string, $lang as xs:string, $col
 };
 
 
-declare function ddi-exist:apply-facet-filter($collection as node()*) as node()*{
-    if(request:get-parameter('organizationname', ())) then
-        $collection//ddi:DDIInstance[.//a:OrganizationName = request:get-parameter('organizationname', (''))]
-    else
-        $collection
-    
-};
 
 
-declare function ddi-exist:searchConcept($search as xs:string, $lang as xs:string, $collection as node()*) as node()*
-{
-    if(empty($search))
-    then
-        ()
-    else
-        if(empty($lang))
-            then
-            	$collection//l:Concept[ft:query(., $search)]
-        	else
-        		$collection//l:Concept[ft:query(., $search)]
-};
+
 
 declare function ddi-exist:limitMatches($nodes as node()*, $start as xs:integer, $records as xs:integer) as node()*
 {

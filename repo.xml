@@ -10,6 +10,5 @@
     <target>ddi-exist</target>
     <prepare>pre-install.xql</prepare>
     <finish/>
-    <permissions user="admin" group="root" mode="rw-rw-r--"/>
-    <deployed>2015-02-05T12:02:43.194+01:00</deployed>
+    <permissions user="admin" password="a-12BOc8" group="root" mode="rw-rw-r--"/>
 </meta>

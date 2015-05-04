@@ -1,6 +1,7 @@
 xquery version "3.0";
 import module namespace ddi-exist-utils ='https://github.com/snd-sweden/ddi-exist'       at '/db/apps/ddi-exist/modules/utils.xqm';
 import module namespace ddi-exist       ='https://github.com/snd-sweden/ddi-exist/search' at '/db/apps/ddi-exist/modules/search.xqm';
+import module namespace ddi-exist-filter ='https://github.com/snd-sweden/ddi-exist/filter' at '/db/apps/ddi-exist/modules/filter.xqm';
 
 import module namespace request="http://exist-db.org/xquery/request";
 import module namespace json="http://www.json.org";
@@ -8,10 +9,14 @@ import module namespace util="http://exist-db.org/xquery/util";
 
 let $config := doc('../config.xml')/config
 
-let $collection := collection($config/base/text())
-(:let $collection := ddi-exist:apply-facet-filter(collection($config/base/text())) :)
+let $collection :=  collection($config/base/text())
 
-
+let $collection := ddi-exist-filter:callNumberPrefixFilter($collection)
+let $collection := ddi-exist-filter:subjectFilter($collection)
+let $collection := ddi-exist-filter:keywordFilter($collection)
+let $collection := ddi-exist-filter:kindOfDataFilter($collection)
+let $collection := ddi-exist-filter:availabilityStatusFilter($collection)
+let $collection := ddi-exist-filter:organizationFilter($collection)
 
 
 let $q  := request:get-parameter("q", '')
@@ -25,6 +30,8 @@ let $action   := request:get-parameter("action","status")
 let $format   := request:get-parameter("format",$config/default-format/text())
 let $callback := request:get-parameter("callback",())
 let $type     := request:get-parameter("type","study,question,variable")
+
+
 
 (: experimental geoparams :)
 let $geo := request:get-parameter("geo", '')

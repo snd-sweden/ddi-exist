@@ -400,30 +400,7 @@ declare function ddi-exist-utils:autocomplete($fragment as xs:string, $lang as x
         ()
 };
 
-declare function ddi-exist-utils:getList($type as xs:string, $lang as xs:string, $collection as node()*) as node()*{
-    (:
-    *d:ModeOfCollection
-    *r:Publisher
-    *s:KindOfData
-    *r:AnalysisUnit
-    *a:AvailabilityStatus
-    *
-    *later:
-    *r:Keyword 
-    *r:Subject
-    *a:OrganizationName
-    :)
-    <item>
-        <filter></filter>
-        <label>
-            <en></en>
-            <sv></sv>
-        </label>
-        <studies></studies>
-        <questions></questions>
-        <variables></variables>
-    </item>
-};
+
 
 
 (:~

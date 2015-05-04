@@ -8,12 +8,11 @@
     <default-records>10</default-records>
     <default-format>xml</default-format>
     <facets>
-        <facet label="modeofcollection">$hits/ancestor::SCENE/TITLE</facet>
-        <facet label="publisher">$hits/ancestor::ACT/TITLE</facet>
-        <facet label="kindofdata">$hits/ancestor::PLAY/TITLE</facet>
-        <facet label="keyword">$hits/SPEAKER</facet>
-        <facet label="subject">$hits/SPEAKER</facet>
-        <facet label="organizationname">$hits/SPEAKER</facet>
+        <facet>subject</facet>
+        <facet>keyword</facet>
+        <facet>analysisUnit</facet>
+        <facet>kindOfData</facet>
+        <facet>publicationDate</facet>
     </facets>
     <!--
     *d:ModeOfCollection

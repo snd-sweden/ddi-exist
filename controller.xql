@@ -17,7 +17,10 @@ else if ($exist:path eq '/search') then
         <forward url="endpoints/search.xql"/>
     </dispatch>
     
-
+else if ($exist:path eq '/list') then
+    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+        <forward url="endpoints/list.xql"/>
+    </dispatch>
     
 else
     (: everything else is passed through :)
