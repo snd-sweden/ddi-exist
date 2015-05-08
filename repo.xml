@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <meta xmlns="http://exist-db.org/xquery/repo">
     <description>Search and stuff for DDI</description>
-    <author>Olof</author>
-    <website>https://code.google.com/p/ddi-exist</website>
+    <author>SND</author>
+    <website>https://github.com/snd-sweden/ddi-exist</website>
     <status>alpha</status>
     <license>GNU-LGPL</license>
     <copyright>true</copyright>
@@ -10,5 +10,5 @@
     <target>ddi-exist</target>
     <prepare>pre-install.xql</prepare>
     <finish/>
-    <permissions user="admin" password="a-12BOc8" group="root" mode="rw-rw-r--"/>
+    <permissions user="demo" password="demo" group="root" mode="rw-rw-r--"/>
 </meta>

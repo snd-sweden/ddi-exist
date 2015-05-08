@@ -144,11 +144,13 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
                                     element {$t/@xml:lang} {fn:string($t)}
                             }
                         </title>
+                        <qt>{$question//d:Text[1]/text()}</qt>
                         <alsoIn>
                             {
-                            let $question_id := $question/r:UserID[@typeOfUserID='question_id']/text()
-                            let $question_text := $question//d:Text[@xml:lang="sv"]/text()
-                            let $studies := collection('/db/ddi/data/ddi3_2/')//s:StudyUnit[.//d:Text = $question_text][.//a:CallNumber/text() != $study//a:CallNumber/text()]
+                            
+                            let $question_text := $question//d:Text[1]/text()
+                            let $studies := //s:StudyUnit[.//d:Text[1]/text() = $question_text][.//a:CallNumber/text() != $study//a:CallNumber/text()]
+
                             for $s in $studies
                                 order by $s/r:Citation/r:Title/r:String[@xml:lang="sv"] descending 
                                     return 
@@ -157,6 +159,7 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
                                         let $fi := $s/r:OtherMaterial[.//r:ID = replace($qs/r:ID[0], 'qs_', '')]//r:ExternalURLReference/text()
                                         return
                                         <study>
+                                           
                                             <name>{xs:string($qi/d:QuestionItemName/r:String[0] | $qi/d:QuestionGridName/r:String[0])}</name>
                                             <callNumber>{$s//a:CallNumber/text()}</callNumber>
                                             <title>{for $t in $s/r:Citation/r:Title/r:String
