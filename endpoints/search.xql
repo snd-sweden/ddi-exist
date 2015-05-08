@@ -31,12 +31,6 @@ let $format   := request:get-parameter("format",$config/default-format/text())
 let $callback := request:get-parameter("callback",())
 let $type     := request:get-parameter("type","study,question,variable")
 
-
-
-(: experimental geoparams :)
-let $geo := request:get-parameter("geo", '')
-let $geo_type := request:get-parameter("geo_type", '')
-
 let $query-start-time := util:system-time()
 
 (:set the correct header for the requested format:)
@@ -56,19 +50,7 @@ let $null :=
 (:get the status of the current document:)
 let $status := if (contains($type, 'status')) then ddi-exist-utils:status($collection) else ()
 
-(: preform the search:)
-let $studies   := 
-    if(contains($type, 'study') and $id != '') then
-        ddi-exist:searchStudyById($id,  $collection)
-    else if(contains($type, 'study') and $geo != '') then
-        ddi-exist:searchStudyByGeoId($geo, $geo_type, $collection)
-    else if (contains($type, 'study') and $id != '') then 
-        ddi-exist:searchStudyById($id,  $collection)
-    else if(contains($type, 'study')) then
-        ddi-exist:searchStudy($q, $lang, $collection)
-    else
-        ()
-        
+let $studies   := if (contains($type, 'study')) then ddi-exist:searchStudy($q, $lang, $collection) else ()
 let $questions := if (contains($type, 'question')) then ddi-exist:searchQuestion($q, $lang, $collection) else ()
 let $variables := if (contains($type, 'variable')) then ddi-exist:searchVariable($q, $lang, $collection) else ()
 
@@ -87,6 +69,7 @@ return
 <result>
     {
         <time>{$time}</time>,
+        <q>{$q}</q>,
         <start>{$start}</start>,
         <end>{($start + $records)}</end>,
         <lang>{$lang}</lang>,

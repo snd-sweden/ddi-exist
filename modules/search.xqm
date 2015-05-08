@@ -13,11 +13,6 @@ declare namespace a="ddi:archive:3_2";
 declare namespace ddi="ddi:instance:3_2"; 
 declare namespace l="ddi:logicalproduct:3_2";
 
-(:filter a collection of studies based on series:)
-declare function ddi-exist:filterSeries($collection as node()*, $series as xs:string) as node()*
-{
-    $collection/ddi:DDIInstance/s:StudyUnit[contains(concat(',', $series, ','), concat(',', r:UserID[@type='series_id'], ','))]
-};
 
 (:~
  : Makes a free-text search in StudyUnit elements and returns the matches
@@ -35,19 +30,20 @@ declare function ddi-exist:searchStudy($search as xs:string, $lang as xs:string,
         if($lang = '')
             then
                 for $element in $collection//ddi:DDIInstance/s:StudyUnit[
-                            ft:query(.//r:Title, $search)  | 
-                            ft:query(.//a:CallNumber, $search)  |
-                            contains(.//a:CallNumber, $search)  |
-                            ft:query(.//r:Subject, $search) |
-                            ft:query(.//r:Keyword, $search) |
-                            ft:query(.//s:Content, $search) |
-                            ft:query(.//a:FirstGiven, $search) |
-                            ft:query(.//a:LastFamily, $search) |
-                            ft:query(.//r:Abstract, $search) |
-                            ft:query(.//r:Purpose, $search) |
-                            ft:query(.//a:OrganizationName/r:String, $search) |
-                            ft:query(.//r:UserID, $search) |
-                            ft:query(.//r:KindOfData, $search)
+                        ft:query(.//r:Title, $search)  | 
+                        range:field-contains('title', $search)  |
+                        ft:query(.//a:CallNumber, $search)  |
+                        contains(.//a:CallNumber, $search)  |
+                        ft:query(.//r:Subject, $search) |
+                        ft:query(.//r:Keyword, $search) |
+                        ft:query(.//s:Content, $search) |
+                        ft:query(.//a:FirstGiven, $search) |
+                        ft:query(.//a:LastFamily, $search) |
+                        ft:query(.//r:Abstract, $search) |
+                        ft:query(.//r:Purpose, $search) |
+                        ft:query(.//a:OrganizationName/r:String, $search) |
+                        ft:query(.//r:UserID, $search) |
+                        ft:query(.//r:KindOfData, $search)
                             
                     ]
                     order by ft:score($element) descending
@@ -61,7 +57,7 @@ declare function ddi-exist:searchStudy($search as xs:string, $lang as xs:string,
 
 
 (:~
- : Makes a free-text search in questions elements and returns the matches
+ : Free-text search in questions elements
  :
  : @version 1.0
  : @param   $search the string that needs to be matched
