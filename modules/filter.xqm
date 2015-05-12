@@ -21,6 +21,21 @@ declare function ddi-exist-filter:apply-facet-filter($collection as node()*) as 
     
 };
 
+declare function ddi-exist-filter:dataCollectionDateFilter($collection as node()*) as node()*{
+    let $startDate := request:get-parameter("dataCollectionStartDate", "")
+    let $endDate := request:get-parameter("dataCollectionEndDate", "")
+    
+    return
+    if($startDate != "") then    
+        $collection/.[.//d:DataCollectionDate[
+                            (r:StartDate/text() >= $startDate and r:EndDate/text() <= $endDate) or
+                            (r:SimpleDate/text() >= $startDate and r:SimpleDate/text() <= $endDate)
+                        ]]
+    else
+        $collection                    
+};
+
+
 declare function ddi-exist-filter:subjectFilter($collection as node()*) as node()*{
     let $subject := request:get-parameter("subject", "")
     

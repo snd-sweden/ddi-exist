@@ -21,6 +21,7 @@ let $collection := ddi-exist-filter:typeOfSamplingProcedureFilter($collection)
 let $collection := ddi-exist-filter:availabilityStatusFilter($collection)
 let $collection := ddi-exist-filter:organizationFilter($collection)
 
+let $collection := ddi-exist-filter:dataCollectionDateFilter($collection)
 
 let $q  := request:get-parameter("q", '')
 let $id := request:get-parameter("id", '')
