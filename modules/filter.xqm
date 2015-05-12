@@ -23,7 +23,7 @@ declare function ddi-exist-filter:apply-facet-filter($collection as node()*) as 
 
 declare function ddi-exist-filter:dataCollectionDateFilter($collection as node()*) as node()*{
     let $startDate := request:get-parameter("dataCollectionStartDate", "")
-    let $endDate := request:get-parameter("dataCollectionEndDate", "")
+    let $endDate := request:get-parameter("dataCollectionEndDate", xs:string(current-date()))
     
     return
     if($startDate != "") then    
