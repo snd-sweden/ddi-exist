@@ -71,6 +71,38 @@ declare function ddi-exist-filter:organizationFilter($collection as node()*) as 
         $collection
 };
 
+declare function ddi-exist-filter:analysisUnitFilter($collection as node()*) as node()*{
+    let $analysisUnit := request:get-parameter("analysisUnit", "")
+    
+    return
+    if($analysisUnit != "") then
+        $collection/.[range:field-eq('analysisUnit', $analysisUnit)]
+    else
+        $collection
+};
+
+declare function ddi-exist-filter:timeMethodFilter($collection as node()*) as node()*{
+    let $timeMethod := request:get-parameter("timeMethod", "")
+    
+    return
+    if($timeMethod != "") then
+        $collection/.[range:field-eq('timeMethod', $timeMethod)]
+    else
+        $collection
+};
+
+declare function ddi-exist-filter:typeOfSamplingProcedureFilter($collection as node()*) as node()*{
+    let $typeOfSamplingProcedure := request:get-parameter("typeOfSamplingProcedure", "")
+    
+    return
+    if($typeOfSamplingProcedure != "") then
+        $collection/.[range:field-eq('typeOfSamplingProcedure', $typeOfSamplingProcedure)]
+    else
+        $collection
+};
+
+
+
 declare function ddi-exist-filter:availabilityStatusFilter($collection as node()*) as node()*{
     let $availabilityStatus := request:get-parameter("availabilityStatus", "")
     

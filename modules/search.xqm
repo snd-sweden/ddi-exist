@@ -44,9 +44,10 @@ declare function ddi-exist:searchStudy($search as xs:string, $lang as xs:string,
                         ft:query(.//a:OrganizationName/r:String, $search) |
                         ft:query(.//r:UserID, $search) |
                         ft:query(.//r:KindOfData, $search)
-                            
                     ]
+                    group by $callNumber := $element//a:CallNumber/text()
                     order by ft:score($element) descending
+                    
                     return $element
           else
                 for $element in $collection//ddi:DDIInstance/s:StudyUnit[ft:query(.//., $search)]   

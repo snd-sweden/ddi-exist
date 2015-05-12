@@ -55,7 +55,12 @@ let $list :=
       case "availabilityStatus"
             return
             distinct-values($collection//a:AvailabilityStatus/r:Content[@xml:lang=$lang]/text())              
-            
+      case "timeMethod"
+            return
+            distinct-values($collection//d:TimeMethod/r:Description/r:Content[@xml:lang=$lang]/text())   
+      case "typeOfSamplingProcedure"
+            return
+            distinct-values($collection//d:TypeOfSamplingProcedure/text())               
       default 
         return ()
             
