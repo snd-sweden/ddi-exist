@@ -45,7 +45,7 @@ declare function ddi-exist:searchStudy($search as xs:string, $lang as xs:string,
                         ft:query(.//r:UserID, $search) |
                         ft:query(.//r:KindOfData, $search)
                     ]
-                    group by $callNumber := $element//a:CallNumber/text()
+                    (:group by $callNumber := $element//a:CallNumber/text():)
                     order by ft:score($element) descending
                     
                     return $element

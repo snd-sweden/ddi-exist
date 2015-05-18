@@ -60,7 +60,10 @@ let $list :=
             distinct-values($collection//d:TimeMethod/r:Description/r:Content[@xml:lang=$lang]/text())   
       case "typeOfSamplingProcedure"
             return
-            distinct-values($collection//d:TypeOfSamplingProcedure/text())               
+            distinct-values($collection//d:TypeOfSamplingProcedure/text())      
+      case "seriesName"
+            return
+            distinct-values($collection//r:SeriesName/r:String[@xml:lang=$lang]/text())              
       default 
         return ()
             

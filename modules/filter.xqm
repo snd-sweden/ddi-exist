@@ -21,6 +21,35 @@ declare function ddi-exist-filter:apply-facet-filter($collection as node()*) as 
     
 };
 
+declare function ddi-exist-filter:timePeriodFilter($collection as node()*) as node()*{
+    let $startDate := request:get-parameter("timePeriodStartDate", "")
+    let $endDate := request:get-parameter("timePeriodEndDate", xs:string(current-date()))
+    
+    return
+    if($startDate != "") then    
+        $collection/.[.//s:StudyUnit/r:Coverage/r:TemporalCoverage/r:ReferenceDate[
+                            (r:StartDate/text() >= $startDate and r:EndDate/text() <= $endDate) or
+                            (r:SimpleDate/text() >= $startDate and r:SimpleDate/text() <= $endDate)
+                        ]]
+    else
+        $collection
+};
+
+
+declare function ddi-exist-filter:publicationDateFilter($collection as node()*) as node()*{
+    let $startDate := request:get-parameter("publicationStartDate", "")
+    let $endDate := request:get-parameter("publicationEndDate", xs:string(current-date()))
+    
+    return
+    if($startDate != "") then    
+        $collection/.[.//s:StudyUnit/r:Citation/r:PublicationDate[
+                            (r:StartDate/text() >= $startDate and r:EndDate/text() <= $endDate) or
+                            (r:SimpleDate/text() >= $startDate and r:SimpleDate/text() <= $endDate)
+                        ]]
+    else
+        $collection                    
+};
+
 declare function ddi-exist-filter:dataCollectionDateFilter($collection as node()*) as node()*{
     let $startDate := request:get-parameter("dataCollectionStartDate", "")
     let $endDate := request:get-parameter("dataCollectionEndDate", xs:string(current-date()))
@@ -36,6 +65,9 @@ declare function ddi-exist-filter:dataCollectionDateFilter($collection as node()
 };
 
 
+
+
+
 declare function ddi-exist-filter:subjectFilter($collection as node()*) as node()*{
     let $subject := request:get-parameter("subject", "")
     
@@ -45,6 +77,17 @@ declare function ddi-exist-filter:subjectFilter($collection as node()*) as node(
     else
         $collection
 };
+
+declare function ddi-exist-filter:seriesNameFilter($collection as node()*) as node()*{
+    let $seriesName := request:get-parameter("seriesName", "")
+    
+    return
+    if($seriesName != "") then
+        $collection/.[range:field-eq('seriesName', $seriesName)]
+    else
+        $collection
+};
+
 
 declare function ddi-exist-filter:kindOfDataFilter($collection as node()*) as node()*{
     let $kindOfData := request:get-parameter("kindOfData", "")

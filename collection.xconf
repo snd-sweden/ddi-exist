@@ -45,6 +45,7 @@
                 <field name="timeMethod" type="xs:string" match="//d:TimeMethod/r:Description/r:Content" case="no"/>
                 <field name="typeOfSamplingProcedure" type="xs:string" match="//d:SamplingProcedure/d:TypeOfSamplingProcedure" case="no"/>
                 <field name="publicationDate" type="xs:string" match="r:Citation/r:PublicationDate/r:SimpleDate"/>
+                <field name="seriesName" type="xs:string" match="r:SeriesStatement/r:SeriesName/r:String" />
                 <field name="organization" type="xs:string" match="//a:OrganizationName/r:String" case="no"/>
             </create>
             <create qname="r:SpatialCoverage">
