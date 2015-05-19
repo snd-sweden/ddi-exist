@@ -11,20 +11,8 @@ let $config := doc('../config.xml')/config
 
 let $collection :=  collection($config/base/text())
 
-let $collection := ddi-exist-filter:callNumberPrefixFilter($collection)
-let $collection := ddi-exist-filter:seriesNameFilter($collection)
-let $collection := ddi-exist-filter:subjectFilter($collection)
-let $collection := ddi-exist-filter:keywordFilter($collection)
-let $collection := ddi-exist-filter:kindOfDataFilter($collection)
-let $collection := ddi-exist-filter:analysisUnitFilter($collection)
-let $collection := ddi-exist-filter:timeMethodFilter($collection)
-let $collection := ddi-exist-filter:typeOfSamplingProcedureFilter($collection)
-let $collection := ddi-exist-filter:availabilityStatusFilter($collection)
-let $collection := ddi-exist-filter:organizationFilter($collection)
+let $collection := ddi-exist-filter:applyFilterOnCollection($collection)
 
-let $collection := ddi-exist-filter:timePeriodFilter($collection)
-let $collection := ddi-exist-filter:publicationDateFilter($collection)
-let $collection := ddi-exist-filter:dataCollectionDateFilter($collection)
 
 let $q  := request:get-parameter("q", '')
 let $id := request:get-parameter("id", '')

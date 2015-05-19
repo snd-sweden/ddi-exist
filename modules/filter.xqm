@@ -13,6 +13,25 @@ declare namespace a="ddi:archive:3_2";
 declare namespace ddi="ddi:instance:3_2"; 
 declare namespace l="ddi:logicalproduct:3_2";
 
+declare function ddi-exist-filter:applyFilterOnCollection($collection as node()*) as node()*{
+    let $collection := ddi-exist-filter:callNumberPrefixFilter($collection)
+    let $collection := ddi-exist-filter:seriesNameFilter($collection)
+    let $collection := ddi-exist-filter:subjectFilter($collection)
+    let $collection := ddi-exist-filter:keywordFilter($collection)
+    let $collection := ddi-exist-filter:kindOfDataFilter($collection)
+    let $collection := ddi-exist-filter:analysisUnitFilter($collection)
+    let $collection := ddi-exist-filter:timeMethodFilter($collection)
+    let $collection := ddi-exist-filter:typeOfSamplingProcedureFilter($collection)
+    let $collection := ddi-exist-filter:availabilityStatusFilter($collection)
+    let $collection := ddi-exist-filter:organizationFilter($collection)
+    
+    let $collection := ddi-exist-filter:timePeriodFilter($collection)
+    let $collection := ddi-exist-filter:publicationDateFilter($collection)
+    let $collection := ddi-exist-filter:dataCollectionDateFilter($collection)    
+    
+    return $collection
+};
+
 declare function ddi-exist-filter:apply-facet-filter($collection as node()*) as node()*{
     if(request:get-parameter('organizationname', ())) then
         $collection//ddi:DDIInstance[.//a:OrganizationName = request:get-parameter('organizationname', (''))]
