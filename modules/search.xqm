@@ -1,4 +1,4 @@
-xquery version "1.0";
+xquery version "3.0";
 module namespace ddi-exist="https://github.com/snd-sweden/ddi-exist/search";
 
 (:ddi namespaces:)
@@ -45,7 +45,6 @@ declare function ddi-exist:searchStudy($search as xs:string, $lang as xs:string,
                         ft:query(.//r:UserID, $search) |
                         ft:query(.//r:KindOfData, $search)
                     ]
-                    (:group by $callNumber := $element//a:CallNumber/text():)
                     order by ft:score($element) descending
                     
                     return $element
@@ -75,18 +74,15 @@ declare function ddi-exist:searchQuestion($search as xs:string, $lang as xs:stri
         else
             if($lang = '')
             	then
-                    for $q in $collection//d:QuestionItem[ft:query(.//d:Text, $search)] |
-                              $collection//d:QuestionItem[contains(.//d:Text, $search)] | 
-                              $collection//d:QuestionGrid[ft:query(.//d:Text, $search)] |
-                              $collection//d:QuestionGrid[contains(.//d:Text, $search)]
-                        
-                        (: let $score := ft:score($q) :)
-                        group by $text := $q//d:Text[0]
-                        (: order by $score descending :)
-                        
-                        return $q
+            	    let $questionTexts :=  distinct-values($collection//d:QuestionText//d:Text[ft:query(., $search)])
+            	    
+                    for $text in $questionTexts
+                        return $collection//d:QuestionItem[.//d:Text eq $text][1] | $collection//d:QuestionGrid[.//d:Text eq $text][1]
             	else
-                	$collection//(d:QuestionItem | d:QuestionGrid)[.//d:Text[@xml:lang = $lang][ft:query(., $search)]]
+                	for $q in $collection//(d:QuestionItem | d:QuestionGrid)[.//d:Text[@xml:lang = $lang][ft:query(., $search)]]
+                	    group by $text := ($q//d:Text)[1]
+
+                        return $q
     return
         $result
 };
@@ -195,13 +191,10 @@ declare function ddi-exist:facets($search as xs:string, $lang as xs:string, $col
 
 declare function ddi-exist:limitMatches($nodes as node()*, $start as xs:integer, $records as xs:integer) as node()*
 {
-    (: compute the limits for this page :)    
     let $max := count($nodes)
 
-    let $end :=  min (($start + $records ,$max))
-     
     (: restrict the full set of matches to this subsequence :)
-    return subsequence($nodes, $start ,$records)    
+    return subsequence($nodes, $start, $records)    
 };
 
 declare function ddi-exist:getQuestions($questionId as xs:integer, $collection as node()*) as node()*

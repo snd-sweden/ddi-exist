@@ -19,6 +19,7 @@ else if ($exist:path eq '/search') then
     
 else if ($exist:path eq '/list') then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+        <cache-control cache="yes"/>
         <forward url="endpoints/list.xql"/>
     </dispatch>
 

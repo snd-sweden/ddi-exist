@@ -18,7 +18,7 @@ let $q  := request:get-parameter("q", '')
 let $id := request:get-parameter("id", '')
 let $series := xs:string(request:get-parameter("series", ()))
 
-let $start    := xs:integer(request:get-parameter("start", "0"))
+let $start    := xs:integer(request:get-parameter("start", 1))
 let $records  := xs:integer(request:get-parameter("records", $config/default-records/text()))
 let $lang     := request:get-parameter("lang", '')
 let $action   := request:get-parameter("action","status")
@@ -50,7 +50,7 @@ let $questions := if (contains($type, 'question')) then ddi-exist:searchQuestion
 let $variables := if (contains($type, 'variable')) then ddi-exist:searchVariable($q, $lang, $collection) else ()
 
 (:limit the matches:)
-let $studiesLimited   := if (contains($type, 'study'))    then <studies   hits="{count($studies)}">{  for $s in ddi-exist:limitMatches($studies, $start, $records)   return ddi-exist-utils:renderStudy($s)}</studies> else () 
+let $studiesLimited   := if (contains($type, 'study'))    then <studies hits="{count($studies)}">{  for $s in ddi-exist:limitMatches($studies, $start, $records)   return ddi-exist-utils:renderStudy($s)}</studies> else () 
 let $questionsLimited := if (contains($type, 'question')) then <questions hits="{count($questions)}">{for $q in ddi-exist:limitMatches($questions, $start, $records) return ddi-exist-utils:renderQuestion($q)}</questions> else () 
 let $variablesLimited := if (contains($type, 'variable')) then <variables hits="{count($variables)}">{for $v in ddi-exist:limitMatches($variables, $start, $records) return ddi-exist-utils:renderVariable($v)}</variables> else () 
 
@@ -66,7 +66,7 @@ return
         <time>{$time}</time>,
         <q>{$q}</q>,
         <start>{$start}</start>,
-        <end>{($start + $records)}</end>,
+        <records>{$records}</records>,
         <lang>{$lang}</lang>,
         $status,
         $facets

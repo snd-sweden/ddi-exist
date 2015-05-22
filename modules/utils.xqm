@@ -91,7 +91,11 @@ declare function ddi-exist-utils:renderQuestion($question as node()) as node(){
  : @return  xml fragment with the rendered question item
  :)
 declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:boolean) as node(){
-    <question>
+    let $config := doc('../config.xml')/config
+    
+    let $collection :=  collection($config/base/text())    
+    return
+    <question json:array="true">
         <id>{xs:string($question/r:ID)}</id>
         {
             if($question/r:UserID) then
@@ -126,6 +130,7 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
         if($top)
             then
                 let $study := $question/ancestor::s:StudyUnit
+                let $callNumber := $study//a:Collection/a:CallNumber/text()
                 return
                 <study>
                         <uri>{fn:base-uri($question/ancestor::ddi:DDIInstance)}</uri>
@@ -137,22 +142,21 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
                                     $study/@id
                             )}   
                         </id>
-                        <CallNumber>{$study//a:CallNumber/text()}</CallNumber>
+                        <CallNumber>{$callNumber}</CallNumber>
                         <title>
                             {for $t in $study/r:Citation/r:Title/r:String
                                 return
                                     element {$t/@xml:lang} {fn:string($t)}
                             }
                         </title>
-                        <qt>{$question//d:Text[1]/text()}</qt>
                         <alsoIn>
                             {
                             
-                            let $question_text := $question//d:Text[1]/text()
-                            let $studies := //s:StudyUnit[.//d:Text[1]/text() = $question_text][.//a:CallNumber/text() != $study//a:CallNumber/text()]
+                            let $question_text := $question//d:Text
+                            let $studies := $collection//s:StudyUnit[.//d:Text eq $question_text]
 
-                            for $s in $studies
-                                order by $s/r:Citation/r:Title/r:String[@xml:lang="sv"] descending 
+                            for $s in $studies[.//a:Collection/a:CallNumber ne $callNumber]
+                                order by ($s/r:Citation/r:Title/r:String)[1] 
                                     return 
                                         let $qi := $s//d:QuestionItem[.//d:Text = $question_text]
                                         let $qs := $qi/ancestor::d:QuestionScheme
@@ -161,7 +165,7 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
                                         <study>
                                            
                                             <name>{xs:string($qi/d:QuestionItemName/r:String[0] | $qi/d:QuestionGridName/r:String[0])}</name>
-                                            <callNumber>{$s//a:CallNumber/text()}</callNumber>
+                                            <callNumber>{$s//a:Collection/a:CallNumber/text()}</callNumber>
                                             <title>{for $t in $s/r:Citation/r:Title/r:String
                                                         return
                                                             element {ddi-exist-utils:getLang($t)} {fn:string($t)}
@@ -206,7 +210,7 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
 declare function ddi-exist-utils:renderStudy($study as node()) as node()*{
     let $callNumber := xs:string($study/a:Archive/a:ArchiveSpecific/a:Collection/a:CallNumber)
     return
-    <StudyUnit>
+    <StudyUnit json:array="true">
         <url>http://snd.gu.se/catalogue/study/{replace($callNumber, ' ', '')}</url>
         <xml-url>http://xml.snd.gu.se/ws/export/study.xql?output-format=ddi&amp;id={replace($callNumber, ' ', '%20')}</xml-url>
         <id>{xs:string(
@@ -251,7 +255,7 @@ declare function ddi-exist-utils:renderStudy($study as node()) as node()*{
  : @return  xml fragment with the rendered question item
  :)
 declare function ddi-exist-utils:renderVariable($variable as node()) as node(){
-    <variable>
+    <variable json:array="true">
         <id>{xs:string($variable/@id)}</id>
         {
             if($variable/r:UserID) then
