@@ -209,9 +209,10 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
 
 declare function ddi-exist-utils:renderStudy($study as node()) as node()*{
     let $callNumber := xs:string($study/a:Archive/a:ArchiveSpecific/a:Collection/a:CallNumber)
+    let $url := xs:string($study/a:Archive/a:ArchiveSpecific/a:Collection/r:URI)
     return
     <StudyUnit json:array="true">
-        <url>http://snd.gu.se/catalogue/study/{replace($callNumber, ' ', '')}</url>
+        <url>{$url}</url>
         <xml-url>http://xml.snd.gu.se/ws/export/study.xql?output-format=ddi&amp;id={replace($callNumber, ' ', '%20')}</xml-url>
         <id>{xs:string(
             if($study/r:UserID[@typeOfUserID='study_id'])
