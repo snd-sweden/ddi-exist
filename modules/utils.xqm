@@ -115,17 +115,16 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
                 return element {ddi-exist-utils:getLang($q)} {fn:string($q)}  
         }
         </questiontext>
+      
+        
         {
-            if($question/d:SubQuestions) then
-                <subquestions>
-                {
-                    let $subquestions := $question/d:SubQuestions/d:QuestionItem | $question/d:SubQuestions/d:MultipleQuestionItem
-                    for $sub in $subquestions
-                        return ddi-exist-utils:renderQuestion($sub, fn:false())
-                }
-                </subquestions>
-            else ()
-        }        
+        if($top)
+            then
+                ddi-exist-utils:renderResponseDomain($question)
+            else
+                ()
+        }
+      
         {
         if($top)
             then
@@ -306,17 +305,17 @@ declare function ddi-exist-utils:renderVariable($variable as node()) as node(){
 
 
 declare function ddi-exist-utils:renderResponseDomain($item as node()) as node(){
-    let $codeList := $item/ancestor::s:StudyUnit//l:CodeScheme[r:ID = xs:string($item//r:CodeListReference/r:ID)]
+    let $codeList := $item/ancestor::s:StudyUnit//l:CodeList[./r:ID = $item//r:CodeListReference/r:ID/text()]
     let $categoryScheme := $item/ancestor::s:StudyUnit//.[r:ID = $codeList/r:CategorySchemeReference/r:ID]
     return
     <responsedomain>
-        <codescheme>{$item/l:Representation/l:CodeRepresentation/r:CodeSchemeReference/r:ID}</codescheme>
+        <codescheme>{$item//r:CodeSchemeReference/r:ID}</codescheme>
         <codes>
             {
                 for $category in $categoryScheme/l:Category
                     return 
                         <code>
-                            <value>{xs:string($category/r:Version)}</value>
+                            <value></value>
                             <label>
                                 {for $t in $category/l:CategoryName/r:String
                                     return

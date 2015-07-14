@@ -74,7 +74,10 @@ declare function ddi-exist:searchQuestion($search as xs:string, $lang as xs:stri
         else
             if($lang = '')
             	then
-            	    let $questionTexts :=  distinct-values($collection//d:QuestionText//d:Text[ft:query(., $search)])
+            	    let $questionTexts :=  distinct-values((
+            	                                    $collection//d:QuestionText//d:Text[ft:query(., $search)] | 
+            	                                    ddi-exist:searchQuestionsByCategory($search, $collection)//d:QuestionText//d:Text
+            	                           ))
             	    
                     for $text in $questionTexts
                         return $collection//d:QuestionItem[.//d:Text eq $text][1] | $collection//d:QuestionGrid[.//d:Text eq $text][1]
@@ -87,6 +90,19 @@ declare function ddi-exist:searchQuestion($search as xs:string, $lang as xs:stri
         $result
 };
 
+
+declare function ddi-exist:searchQuestionsByCategory($search as xs:string, $collection as node()*) as node()*
+{
+    for $categoryScheme in $collection//l:Category/r:Label[ft:query(., $search)]/ancestor::l:CategoryScheme
+        for $categorySchemeID in $categoryScheme/r:ID/text()
+            let $codeListID := $collection//l:CodeList[./r:CategorySchemeReference/r:ID = $categorySchemeID]/r:ID/text()
+            for $question in $collection//d:QuestionItem[./d:CodeDomain/r:CodeListReference/r:ID = $codeListID] |
+                             $collection//d:QuestionGrid[.//r:CodeListReference/r:ID = $codeListID]
+            
+            return 
+                $question
+    
+};
 
 declare function ddi-exist:searchVariable($search as xs:string, $lang as xs:string, $collection as node()*) as node()*
 {
