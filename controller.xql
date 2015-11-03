@@ -23,6 +23,12 @@ else if ($exist:path eq '/list') then
         <forward url="endpoints/list.xql"/>
     </dispatch>
 
+else if ($exist:path eq '/transform') then
+    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+        <cache-control cache="yes"/>
+        <forward url="endpoints/transform.xql"/>
+    </dispatch>
+
 else if ($exist:path eq '/get') then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <forward url="endpoints/get.xql"/>
