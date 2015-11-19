@@ -292,7 +292,7 @@ declare function ddi-exist-utils:renderVariable($variable as node()) as node(){
                             $variable/ancestor::s:StudyUnit/@id
                     )}   
                 </id>
-                <CallNumber>{xs:string($variable/ancestor::s:StudyUnit//a:CallNumber)}</CallNumber>
+                <CallNumber>{xs:string($variable/ancestor::s:StudyUnit//a:Collection/a:CallNumber)}</CallNumber>
                 <title>
                     {for $t in $variable/ancestor::s:StudyUnit/r:Citation/r:Title/r:String
                         return
