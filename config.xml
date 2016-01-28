@@ -2,17 +2,18 @@
 <!--This is the main config for the apps for DDI -->
 <config>
     <!--<base>/db/ddi/data/ddi3_2/internal</base>-->
-    <base>/db/ddi/data/ddi3_2/</base>
+    <base>/db/ddi/data/ddi3_2</base>
     <base-url>http://xml.snd.gu.se/</base-url>
     <default-lang>sv</default-lang>
     <default-records>10</default-records>
     <default-format>xml</default-format>
     <facets>
-        <facet>subject</facet>
-        <facet>keyword</facet>
-        <facet>analysisUnit</facet>
-        <facet>kindOfData</facet>
-        <facet>publicationDate</facet>
+        <facet label="modeofcollection">$hits/ancestor::SCENE/TITLE</facet>
+        <facet label="publisher">$hits/ancestor::ACT/TITLE</facet>
+        <facet label="kindofdata">$hits/ancestor::PLAY/TITLE</facet>
+        <facet label="keyword">$hits/SPEAKER</facet>
+        <facet label="subject">$hits/SPEAKER</facet>
+        <facet label="organizationname">$hits/SPEAKER</facet>
     </facets>
     <!--
     *d:ModeOfCollection

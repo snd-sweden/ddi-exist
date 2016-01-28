@@ -1,5 +1,5 @@
 xquery version "1.0";
-module namespace ddi-exist-utils="https://github.com/snd-sweden/ddi-exist";
+module namespace ddi-exist-utils="http://code.google.com/p/ddi-exist/";
 declare namespace json="http://www.json.org";
 
 (:ddi namespaces:)
@@ -15,7 +15,7 @@ declare namespace ddi="ddi:instance:3_2";
 declare namespace l="ddi:logicalproduct:3_2";
 
 
-import module namespace ddi-exist = 'https://github.com/snd-sweden/ddi-exist/search' at '/db/apps/ddi-exist/modules/search.xqm';
+import module namespace ddi-exist       ='http://code.google.com/p/ddi-exist/search' at '/db/apps/ddi-exist/modules/search.xqm';
 
 (:validate a document against its schema:)
 declare function ddi-exist-utils:validate($document as xs:string, $version as xs:string) as node()*
@@ -115,7 +115,6 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
                 return element {ddi-exist-utils:getLang($q)} {fn:string($q)}  
         }
         </questiontext>
-      
         
         {
         if($top)
@@ -124,7 +123,18 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
             else
                 ()
         }
-      
+        
+        {
+            if($question/d:SubQuestions) then
+                <subquestions>
+                {
+                    let $subquestions := $question/d:SubQuestions/d:QuestionItem | $question/d:SubQuestions/d:MultipleQuestionItem
+                    for $sub in $subquestions
+                        return ddi-exist-utils:renderQuestion($sub, fn:false())
+                }
+                </subquestions>
+            else ()
+        }        
         {
         if($top)
             then
@@ -208,11 +218,15 @@ declare function ddi-exist-utils:renderQuestion($question as node(), $top as xs:
 
 declare function ddi-exist-utils:renderStudy($study as node()) as node()*{
     let $callNumber := xs:string($study/a:Archive/a:ArchiveSpecific/a:Collection/a:CallNumber)
-    let $url := xs:string($study/a:Archive/a:ArchiveSpecific/a:Collection/r:URI)
+    let $url := replace(xs:string($study/a:Archive/a:ArchiveSpecific/a:Collection/r:URI), '-', '')
     return
     <StudyUnit json:array="true">
         <url>{$url}</url>
-        <xml-url>http://xml.snd.gu.se/ws/export/study.xql?output-format=ddi&amp;id={replace($callNumber, ' ', '%20')}</xml-url>
+        <document>{util:document-name($study)}</document>
+        <doi>{$study/r:Citation/r:InternationalIdentifier/r:IdentifierContent/text()}</doi>
+        <publicationDate>{$study/r:Citation/r:PublicationDate/r:SimpleDate/text()}</publicationDate>
+        <versionDate>{string($study/../@versionDate)}</versionDate>
+        <xml-url>http://xml.snd.gu.se/exist/apps/ddi-exist/transform?callNumber={replace($callNumber, ' ', '%20')}</xml-url>
         <id>{xs:string(
             if($study/r:UserID[@typeOfUserID='study_id'])
                 then
@@ -280,7 +294,7 @@ declare function ddi-exist-utils:renderVariable($variable as node()) as node(){
                 return element {ddi-exist-utils:getLang($l)} {fn:string($l)}        
         }
         </label>
-        {ddi-exist-utils:renderResponseDomain($variable)}
+        
 
         <study>
                 <uri>http://xml.snd.gu.se/exist/rest{fn:base-uri($variable/ancestor::ddi:DDIInstance)}</uri>
@@ -308,24 +322,30 @@ declare function ddi-exist-utils:renderResponseDomain($item as node()) as node()
     let $codeList := $item/ancestor::s:StudyUnit//l:CodeList[./r:ID = $item//r:CodeListReference/r:ID/text()]
     let $categoryScheme := $item/ancestor::s:StudyUnit//.[r:ID = $codeList/r:CategorySchemeReference/r:ID]
     return
-    <responsedomain>
-        <codescheme>{$item//r:CodeSchemeReference/r:ID}</codescheme>
-        <codes>
-            {
-                for $category in $categoryScheme/l:Category
-                    return 
-                        <code>
-                            <value></value>
-                            <label>
-                                {for $t in $category/l:CategoryName/r:String
-                                    return
-                                        element {$t/@xml:lang} {fn:string($t)}
-                                }
-                            </label>
-                        </code>
-            }
-        </codes>
-    </responsedomain>
+        if($codeList) then
+            <responsedomain>
+                <type>codeDomain</type>
+                    {
+                        for $category in $categoryScheme/l:Category
+                            return 
+                                <code json:array="true">
+                                    <value></value>
+                                    <label>
+                                        {for $t in $category/l:CategoryName/r:String
+                                            return
+                                                element {$t/@xml:lang} {fn:string($t)}
+                                        }
+                                    </label>
+                                </code>
+                    }
+                
+            </responsedomain>
+        else if($item//d:TextDomain) then
+            <responsedomain>
+                <type>textDomain</type>
+            </responsedomain>
+        else
+            ()
 };
 
 declare function ddi-exist-utils:findStudiesUsingQuestion($user_id as xs:string, $type as xs:string, $collection as node()*) as node()*{
@@ -407,7 +427,30 @@ declare function ddi-exist-utils:autocomplete($fragment as xs:string, $lang as x
         ()
 };
 
-
+declare function ddi-exist-utils:getList($type as xs:string, $lang as xs:string, $collection as node()*) as node()*{
+    (:
+    *d:ModeOfCollection
+    *r:Publisher
+    *s:KindOfData
+    *r:AnalysisUnit
+    *a:AvailabilityStatus
+    *
+    *later:
+    *r:Keyword 
+    *r:Subject
+    *a:OrganizationName
+    :)
+    <item>
+        <filter></filter>
+        <label>
+            <en></en>
+            <sv></sv>
+        </label>
+        <studies></studies>
+        <questions></questions>
+        <variables></variables>
+    </item>
+};
 
 
 (:~

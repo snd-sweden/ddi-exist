@@ -21,7 +21,13 @@ declare option exist:serialize "method=json media-type=text/javascript";
 let $config := doc('../config.xml')/config
 let $collection :=  collection($config/base/text())
 
-let $collection := ddi-exist-filter:applyFilterOnCollection($collection)
+let $collection := ddi-exist-filter:callNumberPrefixFilter($collection)
+let $collection := ddi-exist-filter:subjectFilter($collection)
+let $collection := ddi-exist-filter:keywordFilter($collection)
+let $collection := ddi-exist-filter:kindOfDataFilter($collection)
+let $collection := ddi-exist-filter:availabilityStatusFilter($collection)
+let $collection := ddi-exist-filter:organizationFilter($collection)
+
 
 let $type := request:get-parameter("type","")
 let $lang := request:get-parameter("lang", $config/default-lang/text())
@@ -35,28 +41,28 @@ let $list :=
             return
             distinct-values($collection//r:KindOfData/text())
       case "subject"
-        return
+            return
             distinct-values($collection//r:Subject[@xml:lang=$lang]/text())
       case "keyword"
-        return
+            return
             distinct-values($collection//r:Keyword[@xml:lang=$lang]/text()) 
       case "organization"
-        return
+            return
             distinct-values($collection//a:OrganizationName/r:String[@xml:lang=$lang]/text())             
       case "analysisUnit"
-        return
+            return
             distinct-values($collection//r:AnalysisUnit/text())                 
       case "availabilityStatus"
-        return
+            return
             distinct-values($collection//a:AvailabilityStatus/r:Content[@xml:lang=$lang]/text())              
       case "timeMethod"
-        return
+            return
             distinct-values($collection//d:TimeMethod/r:Description/r:Content[@xml:lang=$lang]/text())   
       case "typeOfSamplingProcedure"
-        return
+            return
             distinct-values($collection//d:TypeOfSamplingProcedure/text())      
       case "seriesName"
-        return
+            return
             distinct-values($collection//r:SeriesName/r:String[@xml:lang=$lang]/text())              
       default 
         return ()
