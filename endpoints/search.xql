@@ -71,8 +71,6 @@ let $studies   :=
         ddi-exist:searchStudyById($id,  $collection)
     else if(contains($type, 'study') and $geo != '') then
         ddi-exist:searchStudyByGeoId($geo, $geo_type, $collection)
-    else if (contains($type, 'study') and $id != '') then 
-        ddi-exist:searchStudyById($id,  $collection)
     else if(contains($type, 'study')) then
         ddi-exist:searchStudy($q, $lang, $collection)
     else
